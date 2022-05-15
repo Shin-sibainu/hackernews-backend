@@ -1,3 +1,6 @@
+"""
+スキーマ（データ構造）定義用ファイル
+"""
 type Query {
   info: String!
   feed: [Link]!
@@ -5,10 +8,34 @@ type Query {
 
 type Mutation {
   post(url: String!, description: String!): Link!
+  """
+  認証用(認証する時にはtokenとuserが必要)
+  """
+  signup(email: String!, password: String!, name: String!): AuthPayload
+  login(email: String!, password: String!): AuthPayload
 }
 
 type Link {
   id: ID!
   description: String!
   url: String!
+  """
+  認証する時に追加
+  """
+  postedBy: User
+}
+
+"""
+認証の時に追加
+"""
+type AuthPayload {
+  token: String
+  user: User
+}
+
+type User {
+  id: ID!
+  name: String!
+  email: String!
+  links: [Link!]!
 }

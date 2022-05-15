@@ -19,4 +19,17 @@ model Link {
   createdAt DateTime @default(now())
   description String
   url String
+  //認証用のときに追加
+  postedBy User? @relation(fields: [postedById], references: [id])
+  postedById Int?　
+}
+
+//Userモデルの追加(認証用)
+//変更後はマイグレーションを再度行う。
+model User{
+  id Int @id @default(autoincrement())
+  name String
+  email String @unique
+  password String
+  links Link[]
 }
