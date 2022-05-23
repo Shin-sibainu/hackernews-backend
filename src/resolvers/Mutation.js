@@ -50,13 +50,25 @@ async function login(parent, args, context, info) {
 async function post(parent, args, context, info) {
   const { userId } = context;
 
-  return await context.prisma.link.create({
+  // return await context.prisma.link.create({
+  //   data: {
+  //     url: args.url,
+  //     description: args.description,
+  //     postedBy: { connect: { id: userId } },
+  //   },
+  // });
+
+  const newLink = await context.prisma.link.create({
     data: {
       url: args.url,
       description: args.description,
       postedBy: { connect: { id: userId } },
     },
   });
+  //送信
+  context.pubsub.publish("NEW_LINK", newLink);
+
+  return newLink;
 }
 
 module.exports = {

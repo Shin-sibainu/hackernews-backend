@@ -1,0 +1,59 @@
+0.news投稿できないことを確認する。
+
+
+1. signupする
+mutation {
+  signup(name: "Alice", email: "alice@prisma.io", password: "graphql") {
+    token
+    user {
+      id
+    }
+  }
+}
+
+2. newsを投稿する
+mutation {
+  post(url: "www.graphqlconf.org", description: "An awesome GraphQL conference") {
+    id
+  }
+}
+
+3. ベアラートークンと一緒に
+{
+  "Authorization": "Bearer __TOKEN__"
+}
+
+4.loginする
+mutation {
+  login(email: "alice@prisma.io", password: "graphql") {
+    token
+    user {
+      email
+      links {
+        url
+        description
+      }
+    }
+  }
+}
+
+5. リアルタイム受信開始
+subscription {
+  newLink {
+    id
+    url
+    description
+    postedBy {
+      id
+      name
+      email
+    }
+  }
+}
+
+6. リアルタイム送信開始
+mutation {
+  post(url: "www.graphqlweekly.com", description: "Curated GraphQL content coming to your email inbox every Friday") {
+    id
+  }
+}
