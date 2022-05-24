@@ -57,3 +57,32 @@ mutation {
     id
   }
 }
+
+7. vote subscription
+subscription {
+  newVote {
+    id
+    link {
+      url
+      description
+    }
+    user {
+      name
+      email
+    }
+  }
+}
+
+8. vote publisher
+mutation {
+  vote(linkId: "__LINK_ID__") {
+    link {
+      url
+      description
+    }
+    user {
+      name
+      email
+    }
+  }
+}

@@ -49,15 +49,6 @@ async function login(parent, args, context, info) {
 //ニュースを投稿するリゾルバ
 async function post(parent, args, context, info) {
   const { userId } = context;
-
-  // return await context.prisma.link.create({
-  //   data: {
-  //     url: args.url,
-  //     description: args.description,
-  //     postedBy: { connect: { id: userId } },
-  //   },
-  // });
-
   const newLink = await context.prisma.link.create({
     data: {
       url: args.url,
@@ -71,8 +62,40 @@ async function post(parent, args, context, info) {
   return newLink;
 }
 
+async function vote(parent, args, context) {
+  //userIdを調べることでログインしてるかどうか分かる。
+  const userId = context.userId;
+
+  //投票情報を探す
+  const vote = await context.prisma.vote.findUnique({
+    where: {
+      linkId_userId: {
+        linkId: Number(args.linkId),
+        userId: userId,
+      },
+    },
+  });
+
+  //２回投稿するのを防ぐ。
+  if (Boolean(vote)) {
+    throw new Error(`すでにその投稿には投票されてます: ${args.linkId}`);
+  }
+
+  //投票する。
+  const newVote = context.prisma.vote.create({
+    data: {
+      user: { connect: { id: userId } },
+      link: { connect: { id: Number(args.linkId) } },
+    },
+  });
+  context.pubsub.publish("NEW_VOTE", newVote);
+
+  return newVote;
+}
+
 module.exports = {
   signup,
   login,
   post,
+  vote,
 };

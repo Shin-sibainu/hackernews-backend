@@ -22,6 +22,7 @@ model Link {
   //認証用のときに追加
   postedBy User? @relation(fields: [postedById], references: [id])
   postedById Int?　
+  votes Vote[]
 }
 
 //Userモデルの追加(認証用)
@@ -32,4 +33,19 @@ model User{
   email String @unique
   password String
   links Link[]
+  votes Vote[]
 }
+
+model Vote {
+  id Int @id @default(autoincrement())
+  link Link @relation(fields: [linkId], references: [id])
+  linkId Int
+  user User @relation(fields: [userId], references: [id])
+  userId Int
+
+  //ユニークIDを複数使用するとき(複合ユニーク制約)
+  @@unique([linkId, userId])
+}
+
+//npx prisma migrate dev --name "add-vote-model"
+//npx prisma generate
